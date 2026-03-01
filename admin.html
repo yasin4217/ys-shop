@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YS MASTER ADMIN - Full Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .active-btn { background: #dc2626 !important; color: white !important; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+
+    <div id="loginBox" class="max-w-md mx-auto mt-20 p-8 bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl">
+        <h1 class="text-3xl font-black text-red-600 text-center italic mb-8 uppercase">Admin Login</h1>
+        <input type="email" id="email" placeholder="Admin Email" class="w-full p-4 bg-slate-800 rounded-2xl mb-4 outline-none border border-slate-700 focus:border-red-600 font-bold">
+        <input type="password" id="pass" placeholder="Password" class="w-full p-4 bg-slate-800 rounded-2xl mb-6 outline-none border border-slate-700 focus:border-red-600 font-bold">
+        <button onclick="login()" class="w-full bg-red-600 p-4 rounded-2xl font-black uppercase tracking-widest">Enter Dashboard</button>
+    </div>
+
+    <div id="dashboard" class="hidden p-4 md:p-8">
+        <div class="max-w-6xl mx-auto">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                <div>
+                    <h1 class="text-2xl font-black italic">YS <span class="text-red-600">MASTER CONTROL</span></h1>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">Status: Authorized Administrator</p>
+                </div>
+                <div class="flex flex-wrap gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-800">
+                    <button onclick="switchTab('orders')" id="btn-orders" class="px-5 py-2 text-[10px] font-black rounded-xl uppercase active-btn">Orders</button>
+                    <button onclick="switchTab('users')" id="btn-users" class="px-5 py-2 text-[10px] font-black rounded-xl uppercase text-slate-400">Users</button>
+                    <button onclick="switchTab('settings')" id="btn-settings" class="px-5 py-2 text-[10px] font-black rounded-xl uppercase text-slate-400">Settings</button>
+                    <button onclick="switchTab('shop')" id="btn-shop" class="px-5 py-2 text-[10px] font-black rounded-xl uppercase text-slate-400">Shop</button>
+                    <button onclick="logout()" class="px-5 py-2 text-[10px] font-black rounded-xl uppercase text-red-500">Exit</button>
+                </div>
+            </div>
+
+            <div id="tab-orders" class="tab-content active grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-slate-900 p-6 rounded-[2rem] border border-slate-800">
+                    <h2 class="text-orange-500 font-black mb-6 uppercase text-xs italic"><i class="fas fa-shopping-cart mr-2"></i> Pending Orders</h2>
+                    <div id="orderList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
+                </div>
+                <div class="bg-slate-900 p-6 rounded-[2rem] border border-slate-800">
+                    <h2 class="text-blue-500 font-black mb-6 uppercase text-xs italic"><i class="fas fa-wallet mr-2"></i> Add Money Requests</h2>
+                    <div id="moneyList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+            <div id="tab-users" class="tab-content bg-slate-900 p-8 rounded-[2rem] border border-slate-800">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-red-600 font-black uppercase text-xs italic">Registered Customers</h2>
+                    <input type="text" id="userSearch" onkeyup="searchUser()" placeholder="Search User Email..." class="bg-slate-800 border border-slate-700 p-2 px-6 rounded-full text-xs outline-none focus:border-red-600">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-500 uppercase">
+                            <tr>
+                                <th class="p-4">Customer ID</th>
+                                <th class="p-4">Name/Email</th>
+                                <th class="p-4">Balance</th>
+                                <th class="p-4">Action</th>
+                                <th class="p-4">Inbox</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="tab-content max-w-2xl mx-auto">
+                <div class="bg-slate-900 p-8 rounded-[2.5rem] border border-slate-800 shadow-xl">
+                    <h2 class="text-red-600 font-black mb-8 uppercase text-xs text-center">Global Shop Settings</h2>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-500 ml-2">Notice Bar Text</label>
+                            <textarea id="setNotice" class="w-full p-4 bg-slate-800 rounded-2xl outline-none border border-slate-700 mt-1 text-xs" rows="2"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 ml-2">Add Money Number</label>
+                                <input id="setNum" type="text" class="w-full p-4 bg-slate-800 rounded-2xl outline-none border border-slate-700 mt-1 text-xs font-bold">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 ml-2">Payment Method</label>
+                                <input id="setMethod" type="text" class="w-full p-4 bg-slate-800 rounded-2xl outline-none border border-slate-700 mt-1 text-xs font-bold">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 ml-2">WhatsApp Number</label>
+                                <input id="setWA" type="text" placeholder="8801xxx" class="w-full p-4 bg-slate-800 rounded-2xl outline-none border border-slate-700 mt-1 text-xs font-bold">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 ml-2">Messenger Link</label>
+                                <input id="setFB" type="text" placeholder="https://m.me/..." class="w-full p-4 bg-slate-800 rounded-2xl outline-none border border-slate-700 mt-1 text-xs font-bold">
+                            </div>
+                        </div>
+                        <button onclick="saveSettings()" class="w-full bg-blue-600 p-4 rounded-2xl font-black uppercase tracking-widest mt-4">Save All Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-shop" class="tab-content grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 h-fit">
+                    <h2 class="text-blue-500 font-black mb-6 uppercase text-xs">Add New Package</h2>
+                    <div class="space-y-4">
+                        <select id="itemCat" class="w-full p-4 bg-slate-800 rounded-2xl text-xs font-bold outline-none border border-slate-700">
+                            <option value="uidPackages">UID Topup</option>
+                            <option value="subPackages">Membership</option>
+                        </select>
+                        <input type="text" id="itemName" placeholder="Pack Name" class="w-full p-4 bg-slate-800 rounded-2xl text-xs outline-none border border-slate-700">
+                        <input type="number" id="itemPrice" placeholder="Price (৳)" class="w-full p-4 bg-slate-800 rounded-2xl text-xs outline-none border border-slate-700">
+                        <button onclick="addItem()" class="w-full bg-green-600 p-4 rounded-2xl font-black uppercase text-xs">Publish Item</button>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-slate-900 p-8 rounded-[2rem] border border-slate-800">
+                    <h2 class="text-slate-500 font-black mb-6 uppercase text-xs italic">Live Inventory</h2>
+                    <div id="shopDisplay" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="msgModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
+        <div class="bg-slate-900 p-8 rounded-[2.5rem] w-full max-w-sm border border-slate-700 shadow-2xl">
+            <h3 id="msgTarget" class="font-black text-red-500 mb-4 uppercase text-sm italic">Message to: #0000</h3>
+            <textarea id="msgText" class="w-full p-4 bg-slate-800 rounded-2xl outline-none text-xs h-32 mb-4 border border-slate-700 focus:border-red-600" placeholder="Type private message..."></textarea>
+            <div class="flex gap-2">
+                <button onclick="sendMsgNow()" class="flex-1 bg-red-600 p-3 rounded-xl font-black text-xs uppercase">Send Now</button>
+                <button onclick="closeMsg()" class="bg-slate-700 p-3 rounded-xl font-black text-xs uppercase px-6">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+
+        // CONFIG (Same as yours)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBR6neCwuPJ1EWtjh7xRn_ZyMbdY1L5onA",
+            authDomain: "ys-topup.firebaseapp.com",
+            projectId: "ys-topup",
+            storageBucket: "ys-topup.firebasestorage.app",
+            messagingSenderId: "430417803283",
+            appId: "1:430417803283:web:26a801bef64db0489a67e6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let activeUID = "";
+
+        // --- AUTH ---
+        window.login = () => {
+            const e = document.getElementById('email').value, p = document.getElementById('pass').value;
+            signInWithEmailAndPassword(auth, e, p).catch(() => alert("Admin Access Denied!"));
+        };
+        window.logout = () => signOut(auth);
+
+        onAuthStateChanged(auth, u => {
+            if(u){
+                document.getElementById('loginBox').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                initAdmin();
+            } else {
+                document.getElementById('loginBox').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
+            }
+        });
+
+        // --- NAVIGATION ---
+        window.switchTab = (t) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content-btn button').forEach(el => el.classList.remove('active-btn'));
+            document.getElementById('tab-' + t).classList.add('active');
+            
+            // UI Button Active
+            document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.classList.remove('active-btn', 'text-white'));
+            document.getElementById('btn-' + t).classList.add('active-btn');
+        };
+
+        function initAdmin() {
+            // 1. Orders
+            onValue(ref(db, 'orders'), s => {
+                const list = document.getElementById('orderList'); list.innerHTML = "";
+                s.forEach(o => {
+                    const d = o.val();
+                    if(d.status === 'Pending'){
+                        list.innerHTML += `<div class="bg-slate-800 p-5 rounded-3xl border-l-4 border-orange-500 animate-fade shadow-xl">
+                            <div class="flex justify-between mb-4">
+                                <div><b class="text-white text-sm">${d.item}</b><br><span class="text-orange-500 font-black text-lg">UID: ${d.player}</span></div>
+                                <span class="text-[8px] bg-slate-950 p-1 px-3 rounded text-slate-500 font-black">#${d.cusID}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="updateStatus('orders/${o.key}', 'Completed')" class="flex-1 bg-green-600 p-2 rounded-xl text-[10px] font-black uppercase">Deliver</button>
+                                <button onclick="updateStatus('orders/${o.key}', 'Rejected')" class="bg-red-900 text-red-300 p-2 px-4 rounded-xl text-[10px] font-black uppercase">Cancel</button>
+                            </div>
+                        </div>`;
+                    }
+                });
+            });
+
+            // 2. Deposit Requests
+            onValue(ref(db, 'moneyRequests'), s => {
+                const list = document.getElementById('moneyList'); list.innerHTML = "";
+                s.forEach(m => {
+                    const d = m.val();
+                    if(d.status === 'Pending'){
+                        list.innerHTML += `<div class="bg-slate-800 p-5 rounded-3xl border-l-4 border-blue-500 shadow-xl">
+                            <div class="flex justify-between mb-4">
+                                <div><b class="text-blue-500 font-black text-lg">৳${d.amount}</b><br><span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">TRX: ${d.trx}</span></div>
+                                <span class="text-[8px] bg-slate-950 p-1 px-3 rounded text-slate-500 font-black">#${d.cusID}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="approveDeposit('${m.key}', '${d.uid}', ${d.amount})" class="flex-1 bg-blue-600 p-2 rounded-xl text-[10px] font-black uppercase">Approve & Add</button>
+                                <button onclick="updateStatus('moneyRequests/${m.key}', 'Rejected')" class="bg-slate-700 p-2 px-4 rounded-xl text-[10px] font-black uppercase">Reject</button>
+                            </div>
+                        </div>`;
+                    }
+                });
+            });
+
+            // 3. User Table
+            onValue(ref(db, 'users'), s => {
+                const tbody = document.getElementById('userTableBody'); tbody.innerHTML = "";
+                s.forEach(u => {
+                    const d = u.val();
+                    tbody.innerHTML += `<tr class="border-b border-slate-800 hover:bg-slate-900 transition">
+                        <td class="p-4 font-black text-slate-500">#${d.cusID}</td>
+                        <td class="p-4"><b>${d.name}</b><br><span class="text-[9px] text-slate-500">${d.email}</span></td>
+                        <td class="p-4 font-black text-green-500">৳${d.balance}</td>
+                        <td class="p-4">
+                            <div class="flex gap-1">
+                                <input id="bal-${u.key}" type="number" placeholder="Edit" class="w-14 bg-slate-800 border border-slate-700 p-1 rounded text-[10px] outline-none">
+                                <button onclick="setBalance('${u.key}')" class="bg-blue-600 p-1 px-3 rounded text-[9px] font-black uppercase">Set</button>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <button onclick="openMsg('${u.key}', '${d.cusID}')" class="bg-red-600/20 text-red-500 border border-red-900/50 p-1 px-4 rounded-lg text-[9px] font-black uppercase">Message</button>
+                        </td>
+                    </tr>`;
+                });
+            });
+
+            // 4. Shop Display
+            onValue(ref(db, 'shop'), s => {
+                const display = document.getElementById('shopDisplay'); display.innerHTML = "";
+                s.forEach(cat => {
+                    cat.forEach(item => {
+                        const v = item.val();
+                        display.innerHTML += `<div class="bg-slate-800 p-4 rounded-2xl flex justify-between items-center border border-slate-700">
+                            <div><p class="text-[8px] text-slate-500 uppercase font-black tracking-widest">${cat.key}</p>
+                            <p class="text-xs font-bold text-white">${v.n}</p><p class="text-[10px] font-black text-green-500">৳${v.p}</p></div>
+                            <button onclick="delItem('${cat.key}', '${item.key}')" class="text-red-500 hover:text-white transition w-8 h-8 rounded-lg bg-slate-900"><i class="fas fa-trash-alt text-xs"></i></button>
+                        </div>`;
+                    });
+                });
+            });
+
+            // 5. Load Settings
+            onValue(ref(db, 'settings'), s => {
+                const d = s.val();
+                if(d){
+                    document.getElementById('setNotice').value = d.notice || "";
+                    document.getElementById('setNum').value = d.number || "";
+                    document.getElementById('setMethod').value = d.method || "";
+                    document.getElementById('setWA').value = d.whatsapp || "";
+                    document.getElementById('setFB').value = d.fb || "";
+                }
+            });
+        }
+
+        // --- CORE LOGIC ---
+        window.updateStatus = (path, status) => update(ref(db, path), { status });
+        
+        window.approveDeposit = async (mKey, uUID, amt) => {
+            const bRef = ref(db, `users/${uUID}/balance`);
+            const current = (await get(bRef)).val() || 0;
+            await update(ref(db, `users/${uUID}`), { balance: current + amt });
+            updateStatus('moneyRequests/' + mKey, 'Approved');
+            alert("Money Added!");
+        };
+
+        window.setBalance = (uid) => {
+            const val = document.getElementById('bal-' + uid).value;
+            if(!val) return;
+            update(ref(db, `users/${uid}`), { balance: parseInt(val) }).then(() => {
+                alert("Balance Updated!");
+                document.getElementById('bal-' + uid).value = "";
+            });
+        };
+
+        window.saveSettings = () => {
+            set(ref(db, 'settings'), {
+                notice: document.getElementById('setNotice').value,
+                number: document.getElementById('setNum').value,
+                method: document.getElementById('setMethod').value,
+                whatsapp: document.getElementById('setWA').value,
+                fb: document.getElementById('setFB').value
+            }).then(() => alert("Settings Updated Globally!"));
+        };
+
+        window.addItem = () => {
+            const cat = document.getElementById('itemCat').value;
+            const n = document.getElementById('itemName').value;
+            const p = document.getElementById('itemPrice').value;
+            if(n && p) {
+                push(ref(db, `shop/${cat}`), { n, p: parseInt(p) }).then(() => {
+                    alert("Package Added!");
+                    document.getElementById('itemName').value = "";
+                    document.getElementById('itemPrice').value = "";
+                });
+            }
+        };
+
+        window.delItem = (cat, key) => confirm("Delete this?") && remove(ref(db, `shop/${cat}/${key}`));
+
+        // --- MESSAGING ---
+        window.openMsg = (uid, cusID) => {
+            activeUID = uid;
+            document.getElementById('msgTarget').innerText = "Message to: #" + cusID;
+            document.getElementById('msgModal').classList.remove('hidden');
+        };
+        window.closeMsg = () => document.getElementById('msgModal').classList.add('hidden');
+        window.sendMsgNow = () => {
+            const txt = document.getElementById('msgText').value;
+            if(!txt) return;
+            push(ref(db, `messages/${activeUID}`), {
+                text: txt,
+                time: new Date().toLocaleString()
+            }).then(() => {
+                alert("Message Delivered to User Inbox!");
+                closeMsg();
+                document.getElementById('msgText').value = "";
+            });
+        };
+
+        window.searchUser = () => {
+            let f = document.getElementById('userSearch').value.toUpperCase();
+            let tr = document.getElementById('userTableBody').getElementsByTagName('tr');
+            for (let i = 0; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName('td')[1];
+                if (td) {
+                    let v = td.textContent || td.innerText;
+                    tr[i].style.display = v.toUpperCase().indexOf(f) > -1 ? "" : "none";
+                }
+            }
+        };
+    </script>
+</body>
+</html>
